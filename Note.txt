@@ -1,0 +1,15 @@
+Xây dựng UI mobile cho employee
+Xây dựng UI web cho manager
+Chấm công bằng QR code
+
+Git responsive: https://github.com/Truongvanduc2k/ManagerWeb/tree/main
+Trello: https://trello.com/invite/b/mePjQacX/ATTI80afdab338d24613fce1eb57bea825b0A38CFD9C/webstie-quản-ly-nhan-sự-jollibee
+ERD diagrams: https://app.diagrams.net/#G1eyw-TzCHSKeZkXVar3uHR8qSAnp2aplJ
+Phân tích yêu cầu: https://docs.google.com/document/d/1tfjw1MQMhEIYBaRi543Z7DQGX3WDQSGa/edit?usp=sharing&ouid=107502731263179917231&rtpof=true&sd=true
+Rest API: https://docs.google.com/spreadsheets/d/1bUKezNXt5pfZGh_Hils1E53mJaWK30AJudaedwgmqJ0/edit#gid=1652226432
+
+Account Mongodb Atlas: manager / 88ZSyHxxH4TVVO9Y
+Connect Mongodb Atlas with MongoDB Compass: 
+mongodb+srv://manager:88ZSyHxxH4TVVO9Y@cluster0.038zb49.mongodb.net/test
+Connect Mongodb Atlas with application: 
+mongodb+srv://manager:88ZSyHxxH4TVVO9Y@cluster0.038zb49.mongodb.net/${DATABASE_NAME}?retryWrites=true&w=majority

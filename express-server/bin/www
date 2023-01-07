@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require("../app");
+var debug = require("debug")("express-app:server");
+var http = require("http");
+// var randomString = require("randomstring");
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || "9000");
+app.set("port", port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+// Socket IO
+const { Server } = require("socket.io");
+const { object } = require("yup");
+
+const io = new Server(server, {
+  cors: {
+    origin: true,
+    methods: ["GET", "POST", "PATCH"],
+  },
+});
+
+// Cấu hình các event
+io.on("connection", (socket) => {
+  // connected to correct id.
+  socket.on("setup", (userData) => {
+    console.log(`User connected ${socket.id}`);
+
+    socket.join(userData._id);
+
+    socket.emit("connected", "hello");
+  });
+
+  socket.on("join-chat", (room) => {
+    socket.join(room);
+  });
+
+  socket.on("typing", (room) => {
+    socket.in(room).emit("typing");
+  });
+
+  socket.on("stop-typing", (room) => {
+    socket.in(room).emit("stop-typing");
+  });
+
+  socket.on("new-message", (newMessageReceived) => {
+    let chat = newMessageReceived.chat;
+    console.log(newMessageReceived)
+
+    if (!chat.users) return console.log("chat.users not defined");
+
+    chat.users.forEach((user) => {
+      if (user._id === newMessageReceived.sender._id) return;
+
+      socket.in(user._id).emit("message-received", newMessageReceived);
+    });
+  });
+
+  socket.on("datashift", (data) => {
+    const ob = data
+    console.log(ob)
+    //! const { id, inout, randomKey} = data
+    socket.emit('datashiftQr', data)
+  })
+
+  socket.off("setup", () => {
+    socket.leave(userData._id);
+  });
+});
+
+// app.io = io;
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}
